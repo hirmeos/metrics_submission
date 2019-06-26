@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os
+import csv
+from service import initialise_service
+
+METRICS_DIR = os.environ['METRICS_DIR']
+
+
+def instream(filename):
+    return open(filename, "r")
+
+
+def run():
+    api = initialise_service()
+    for filename in os.listdir(METRICS_DIR):
+        filepath = os.path.join(METRICS_DIR, filename)
+        if filename.endswith('.csv') and os.path.getsize(filepath) > 0:
+            f = instream(filepath)
+            buff = csv.reader(f, delimiter=',', quotechar='"')
+            next(buff, None)  # skip headers
+            for row in buff:
+                measure, timestamp, work_uri, country, event_uri, value = row
+                api.new_event(measure, timestamp, work_uri, country,
+                              event_uri, value)
+            f.close()
+
+
+if __name__ == '__main__':
+    run()
