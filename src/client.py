@@ -22,7 +22,7 @@ class MetricsClient(object):
 
     def get_token(self, url, email, password):
         credentials = dict(email=email, password=password)
-        auth = tuple(email, password)
+        auth = (email, password)
         response = self.post_request(url, payload=credentials, auth=auth)
         return response[0]['token']
 
