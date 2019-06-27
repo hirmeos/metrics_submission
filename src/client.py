@@ -22,7 +22,9 @@ class MetricsClient(object):
 
     def get_token(self, url, email, password):
         credentials = dict(email=email, password=password)
-        return self.post_request(url, credentials)[0]['token']
+        auth = tuple(email, password)
+        response = self.post_request(url, payload=credentials, auth=auth)
+        return response[0]['token']
 
     def new_event(self, measure_uri, timestamp, work_uri, country_uri,
                   event_uri, value):
@@ -40,8 +42,9 @@ class MetricsClient(object):
             raise ValueError(r.text)
         return r.json()['data']
 
-    def post_request(self, url, payload={}):
-        r = requests.post(url, json=payload, headers=self.auth_headers)
+    def post_request(self, url, payload={}, auth=()):
+        r = requests.post(url, json=payload, headers=self.auth_headers,
+                          auth=auth)
         if r.status_code != requests.codes.ok:
             raise ValueError(r.text)
         return r.json()['data']
