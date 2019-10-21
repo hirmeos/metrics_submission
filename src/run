@@ -6,7 +6,7 @@ import csv
 from service import initialise_service
 
 METRICS_DIR = os.environ['METRICS_DIR']
-PREFIX=os.environ.get('PREFIX')
+PREFIX = os.environ.get('PREFIX')
 
 
 def instream(filename):
