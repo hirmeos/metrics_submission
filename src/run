@@ -23,7 +23,7 @@ def run():
             next(buff, None)  # skip headers
             for row in buff:
                 measure, timestamp, work_uri, country, event_uri, value = row
-                if PREFIX and work_uri.startswith(PREFIX):
+                if not PREFIX or (PREFIX and work_uri.startswith(PREFIX)):
                     api.new_event(measure, timestamp, work_uri, country,
                                   event_uri, value)
             f.close()
