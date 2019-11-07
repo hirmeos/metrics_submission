@@ -3,10 +3,12 @@
 
 import os
 import csv
+from datetime import datetime, timedelta
 from service import initialise_service
 
 METRICS_DIR = os.environ['METRICS_DIR']
 PREFIX = os.environ.get('PREFIX')
+THRESHOLD_DAYS = int(os.environ.get('THRESHOLD_DAYS', 0))
 
 
 def instream(filename):
@@ -15,6 +17,7 @@ def instream(filename):
 
 def run():
     api = initialise_service()
+    threshold = datetime.now() - timedelta(days=THRESHOLD_DAYS)
     for filename in os.listdir(METRICS_DIR):
         filepath = os.path.join(METRICS_DIR, filename)
         if filename.endswith('.csv') and os.path.getsize(filepath) > 0:
@@ -23,6 +26,10 @@ def run():
             next(buff, None)  # skip headers
             for row in buff:
                 measure, timestamp, work_uri, country, event_uri, value = row
+                if THRESHOLD_DAYS:
+                    time = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+                    if (time < threshold):
+                        continue
                 if not PREFIX or (PREFIX and work_uri.startswith(PREFIX)):
                     api.new_event(measure, timestamp, work_uri, country,
                                   event_uri, value)
