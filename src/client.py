@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import requests
 
 
@@ -34,7 +35,10 @@ class MetricsClient(object):
                        country_uri=country_uri,
                        event_uri=event_uri,
                        value=value)
-        return self.post_request(self.events_endp, payload)
+        logging.info("New Event: {}".format(payload))
+        result = self.post_request(self.events_endp, payload)
+        logging.info("Success: {}".format(result))
+        return result
 
     def get_request(self, url):
         r = requests.get(url)
@@ -45,6 +49,7 @@ class MetricsClient(object):
     def post_request(self, url, payload={}, auth=()):
         r = requests.post(url, json=payload, headers=self.auth_headers,
                           auth=auth)
+
         if r.status_code != requests.codes.ok:
             raise ValueError(r.text)
         return r.json()['data']
