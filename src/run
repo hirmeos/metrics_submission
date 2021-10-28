@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
 import csv
 from datetime import datetime, timedelta
 from service import initialise_service
@@ -16,6 +17,9 @@ def instream(filename):
 
 
 def run():
+    logging.basicConfig(level=logging.INFO,
+                        format='%(levelname)s:%(asctime)s: %(message)s')
+
     api = initialise_service()
     threshold = datetime.now() - timedelta(days=THRESHOLD_DAYS)
     for filename in os.listdir(METRICS_DIR):
